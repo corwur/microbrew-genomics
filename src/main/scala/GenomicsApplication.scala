@@ -4,8 +4,11 @@ import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.ContentNegotiator.Alternative.ContentType
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
+import org.apache.hadoop.fs.LocalFileSystem
+import org.apache.hadoop.hdfs.DistributedFileSystem
 import org.apache.spark.sql.SparkSession
 import org.bdgenomics.formats.avro.Feature
+
 import scala.io.StdIn
 import spray.json._
 
@@ -14,6 +17,8 @@ object GenomicsApplication {
   def main(args: Array[String]): Unit = {
 
     val spark = SparkSession.builder().appName("microbrewery-genome-browser").getOrCreate()
+    spark.sparkContext.hadoopConfiguration.set("fs.hdfs.impl", classOf[DistributedFileSystem].getName)
+    spark.sparkContext.hadoopConfiguration.set("fs.file.impl", classOf[LocalFileSystem].getName)
 
     val genomeReference = new GenomeReference(spark.sparkContext, args(0), args(1))
 

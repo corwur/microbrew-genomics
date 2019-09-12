@@ -76,3 +76,10 @@ spec:
             value: {{ .Values.Master.ServicePort | quote }}
           - name: SPARK_MASTER_WEBUI_PORT
             value: {{ .Values.WebUi.ContainerPort | quote }}
+          volumeMounts:
+            - name: efs-pvc
+              mountPath: "/mnt"
+      volumes:
+        - name: efs-pvc
+         persistentVolumeClaim:
+           claimName: efs
